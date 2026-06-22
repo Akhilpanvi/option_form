@@ -622,7 +622,7 @@
 <div class="page-body">
 
   <!-- UPLOAD CARD -->
-  <div class="upload-card" id="uploadBoxMaster">
+  <div class="upload-card hidden" id="uploadBoxMaster">
     <div class="upload-icon">📊</div>
     <h2>Load the Option Master File</h2>
     <p>Upload the official Excel file (.xlsx) to unlock the full faculty allocation list for all courses and sections.</p>
@@ -654,7 +654,7 @@
   </div>
 
   <!-- MAIN CONTENT (hidden until file loaded) -->
-  <div id="mainContent" class="content-grid hidden">
+  <div id="mainContent" class="content-grid">
 
     <!-- FILTER SIDEBAR -->
     <aside class="filter-sidebar">
@@ -735,9 +735,9 @@
 
       <!-- WELCOME STATE (shown before data loads) -->
       <div id="welcomeState">
-        <div class="w-icon">👆</div>
-        <h3>Select your Department</h3>
-        <p>Choose your regulation and department on the left to see faculty assignments for all your courses.</p>
+        <div class="w-icon">⏳</div>
+        <h3>Loading Academic Data...</h3>
+        <p>Connecting to the course reference database. Please wait a moment.</p>
       </div>
 
       <!-- TABLE CARD -->
@@ -992,7 +992,8 @@ async function autoLoadExcel() {
       console.warn(`Failed to auto-load from ${path}:`, e);
     }
   }
-  // If not auto-loaded, make sure the upload card remains visible
+  // If not auto-loaded, make sure the upload card remains visible and hide mainContent
+  document.getElementById('mainContent').classList.add('hidden');
   document.getElementById('uploadBoxMaster').classList.remove('hidden');
 }
 
