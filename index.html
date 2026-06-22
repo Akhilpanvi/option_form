@@ -574,18 +574,6 @@
 
   .hidden { display: none !important; }
 
-  /* ── PRINT ── */
-  @media print {
-    body { background: white; }
-    .site-header, .hero, .upload-card, .filter-sidebar, .print-btn, .info-bar { display: none !important; }
-    .page-body { margin: 0; padding: 0; max-width: 100%; }
-    .content-grid { display: block; }
-    .results-panel { gap: 0; }
-    .table-card { box-shadow: none; border-radius: 0; border: 1px solid #ccc; }
-    .course-header-row td { background: #1E5AAB !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    thead th { background: #0A2463 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
-
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     .content-grid { grid-template-columns: 1fr; }
@@ -621,37 +609,7 @@
 
 <div class="page-body">
 
-  <!-- UPLOAD CARD -->
-  <div class="upload-card hidden" id="uploadBoxMaster">
-    <div class="upload-icon">📊</div>
-    <h2>Load the Option Master File</h2>
-    <p>Upload the official Excel file (.xlsx) to unlock the full faculty allocation list for all courses and sections.</p>
-
-    <div class="upload-steps">
-      <div class="upload-step">
-        <span class="num">1</span>
-        Get the file from your coordinator
-      </div>
-      <span class="upload-step-sep">→</span>
-      <div class="upload-step">
-        <span class="num">2</span>
-        Upload it below
-      </div>
-      <span class="upload-step-sep">→</span>
-      <div class="upload-step">
-        <span class="num">3</span>
-        Filter by your dept &amp; course
-      </div>
-    </div>
-
-    <div class="file-input-wrap">
-      <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
-      <button class="upload-trigger" onclick="document.getElementById('excelFile').click()">
-        ⬆ Upload Option Master (.xlsx)
-      </button>
-    </div>
-    <div class="upload-hint">Supports .xlsx, .xls, .csv · File stays in your browser — nothing is uploaded to any server</div>
-  </div>
+  <!-- UPLOAD CARD REMOVED (AUTOLOADING DATA FROM GOOGLE SHEETS) -->
 
   <!-- MAIN CONTENT (hidden until file loaded) -->
   <div id="mainContent" class="content-grid">
@@ -766,6 +724,12 @@
 let data = [];
 let deptMapping = {};
 
+// Google Sheets Config: If Spreadsheet IDs are provided, the site will fetch live data from them.
+const GOOGLE_SHEET_CONFIG = {
+  optionMasterId: "2PACX-1vTNHfGhuJrmLJ5OlSOtFEnLKbQJ8Ju1C10Bf4bgdUqHZ6d1nqHIWYdvcRxMy9Yr1FIVLIng742-BIw9", // Paste Option-MASTER Google Sheet ID here
+  offeredToId: ""     // Paste offeredto Google Sheet ID here
+};
+
 const regEl = document.getElementById("reg");
 const offeredToDept = document.getElementById("offeredToDept");
 const category = document.getElementById("category");
@@ -847,13 +811,53 @@ function fillDropdown(element, values, addAllOption = false) {
   });
 }
 
-// Reusable Excel parsing function
-function processExcelBuffer(dataBuffer) {
-  const workbook = XLSX.read(dataBuffer, { type: 'array' });
+// Reusable Excel parsing function for both master and offeredto data
+function processBothExcelBuffers(masterBuffer, offeredBuffer) {
   deptMapping = {};
 
-  if (workbook.SheetNames.length > 1) {
-    const sheet2 = workbook.Sheets[workbook.SheetNames[1]];
+  // 1. Process offeredBuffer first (if available) to populate deptMapping
+  if (offeredBuffer) {
+    try {
+      const workbookOffered = XLSX.read(offeredBuffer, { type: 'array' });
+      workbookOffered.SheetNames.forEach(sheetName => {
+        const sheet = workbookOffered.Sheets[sheetName];
+        const sheetArray = XLSX.utils.sheet_to_json(sheet, { header: 1, blankrows: false });
+        if (sheetArray.length > 0) {
+          let headerRowIndex = -1, kCodeIndex = -1, kDeptIndex = -1;
+          for (let i = 0; i < Math.min(sheetArray.length, 20); i++) {
+            let row = sheetArray[i]; if (!row) continue;
+            let foundCode = -1, foundDept = -1;
+            for (let j = 0; j < row.length; j++) {
+              let cellVal = String(row[j] || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+              if (cellVal.includes("coursecode") || cellVal === "code" || cellVal.includes("subjectcode")) foundCode = j;
+              if (cellVal.includes("department") || cellVal.includes("dept") || cellVal.includes("offered") || cellVal.includes("branch")) foundDept = j;
+            }
+            if (foundCode !== -1 && foundDept !== -1) { headerRowIndex = i; kCodeIndex = foundCode; kDeptIndex = foundDept; break; }
+          }
+          if (headerRowIndex !== -1) {
+            for (let i = headerRowIndex + 1; i < sheetArray.length; i++) {
+              let row = sheetArray[i]; if (!row) continue;
+              let code = getCleanStr(row[kCodeIndex]);
+              let dept = getCleanStr(row[kDeptIndex]);
+              if (code && dept && dept !== "YES" && dept !== "NO") {
+                if (!deptMapping[code]) deptMapping[code] = new Set();
+                dept.split(',').forEach(d => { if (d.trim()) deptMapping[code].add(d.trim()); });
+              }
+            }
+          }
+        }
+      });
+    } catch (err) {
+      console.error("Error parsing offeredto.xlsx:", err);
+    }
+  }
+
+  // 2. Process masterBuffer
+  const workbookMaster = XLSX.read(masterBuffer, { type: 'array' });
+
+  // Fallback to sheet 2 of master if deptMapping is empty and sheet 2 exists
+  if (Object.keys(deptMapping).length === 0 && workbookMaster.SheetNames.length > 1) {
+    const sheet2 = workbookMaster.Sheets[workbookMaster.SheetNames[1]];
     const sheet2Array = XLSX.utils.sheet_to_json(sheet2, { header: 1, blankrows: false });
     if (sheet2Array.length > 0) {
       let headerRowIndex = -1, kCodeIndex = -1, kDeptIndex = -1;
@@ -881,7 +885,7 @@ function processExcelBuffer(dataBuffer) {
     }
   }
 
-  const mainSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const mainSheet = workbookMaster.Sheets[workbookMaster.SheetNames[0]];
   const rawData = XLSX.utils.sheet_to_json(mainSheet, { defval: "" });
   if (rawData.length === 0) { throw new Error("File appears to be empty."); }
 
@@ -923,7 +927,7 @@ function processExcelBuffer(dataBuffer) {
     if (kDeptMain) {
       let deptVal = getCleanStr(row[kDeptMain]);
       let cCode = cleanRow["_CODE"];
-      if (cCode && deptVal && deptVal !== "#N/A" && deptVal !== "0") {
+      if (cCode && deptVal && deptVal !== "#N/A" && deptVal !== "0" && deptVal !== "YES" && deptVal !== "NO") {
         if (!deptMapping[cCode]) deptMapping[cCode] = new Set();
         deptVal.split(',').forEach(d => { if (d.trim()) deptMapping[cCode].add(d.trim()); });
       }
@@ -951,26 +955,8 @@ function processExcelBuffer(dataBuffer) {
   });
 
   document.getElementById('mainContent').classList.remove('hidden');
-  document.getElementById('uploadBoxMaster').classList.add('hidden');
   loadReg();
 }
-
-// FILE UPLOAD
-document.getElementById('excelFile').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const dataBuffer = new Uint8Array(e.target.result);
-      processExcelBuffer(dataBuffer);
-    } catch (error) {
-      alert("Error reading file. Please make sure it's a valid Excel file.");
-      console.error(error);
-    }
-  };
-  reader.readAsArrayBuffer(file);
-});
 
 // Auto-load excel file if available locally
 window.addEventListener('DOMContentLoaded', () => {
@@ -978,23 +964,97 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 async function autoLoadExcel() {
-  const paths = ['Option-MASTER.xlsx', '../Option-MASTER.xlsx'];
-  for (let path of paths) {
+  let masterBuffer = null;
+  let offeredBuffer = null;
+
+  // 1. Try fetching from Google Sheets if configured (using published URL format)
+  if (GOOGLE_SHEET_CONFIG.optionMasterId) {
     try {
-      const response = await fetch(path);
-      if (!response.ok) continue;
-      const arrayBuffer = await response.arrayBuffer();
-      const dataBuffer = new Uint8Array(arrayBuffer);
-      processExcelBuffer(dataBuffer);
-      console.log(`Successfully auto-loaded excel from ${path}`);
-      return;
+      const masterUrl = `https://docs.google.com/spreadsheets/d/e/${GOOGLE_SHEET_CONFIG.optionMasterId}/pub?output=xlsx`;
+      console.log("Attempting to load Option-MASTER from Google Sheets...");
+      const masterRes = await fetch(masterUrl);
+      if (masterRes.ok) {
+        masterBuffer = await masterRes.arrayBuffer();
+        console.log("Successfully auto-loaded Option-MASTER from Google Sheets!");
+      }
+
+      if (GOOGLE_SHEET_CONFIG.offeredToId) {
+        const offeredUrl = `https://docs.google.com/spreadsheets/d/e/${GOOGLE_SHEET_CONFIG.offeredToId}/pub?output=xlsx`;
+        console.log("Attempting to load offeredto from Google Sheets...");
+        const offeredRes = await fetch(offeredUrl);
+        if (offeredRes.ok) {
+          offeredBuffer = await offeredRes.arrayBuffer();
+          console.log("Successfully auto-loaded offeredto from Google Sheets!");
+        }
+      }
     } catch (e) {
-      console.warn(`Failed to auto-load from ${path}:`, e);
+      console.warn("Failed to load from Google Sheets:", e);
     }
   }
-  // If not auto-loaded, make sure the upload card remains visible and hide mainContent
-  document.getElementById('mainContent').classList.add('hidden');
-  document.getElementById('uploadBoxMaster').classList.remove('hidden');
+
+  // 2. Fallback to local files if Google Sheets failed or not configured
+  if (!masterBuffer) {
+    const masterPaths = ['Option-MASTER.xlsx', '../Option-MASTER.xlsx'];
+    const offeredPaths = ['offeredto.xlsx', '../offeredto.xlsx'];
+
+    for (let path of masterPaths) {
+      try {
+        const response = await fetch(path);
+        if (response.ok) {
+          masterBuffer = await response.arrayBuffer();
+          console.log(`Auto-loaded Option-MASTER from local path: ${path}`);
+          break;
+        }
+      } catch (e) {
+        console.warn(`Failed to fetch master locally from ${path}:`, e);
+      }
+    }
+
+    if (!offeredBuffer) {
+      for (let path of offeredPaths) {
+        try {
+          const response = await fetch(path);
+          if (response.ok) {
+            offeredBuffer = await response.arrayBuffer();
+            console.log(`Auto-loaded offeredto from local path: ${path}`);
+            break;
+          }
+        } catch (e) {
+          console.warn(`Failed to fetch offeredto locally from ${path}:`, e);
+        }
+      }
+    }
+  }
+
+  if (masterBuffer && offeredBuffer) {
+    const masterBuf = new Uint8Array(masterBuffer);
+    const offeredBuf = new Uint8Array(offeredBuffer);
+    processBothExcelBuffers(masterBuf, offeredBuf);
+  } else if (masterBuffer) {
+    const masterBuf = new Uint8Array(masterBuffer);
+    processBothExcelBuffers(masterBuf, null);
+  } else {
+    // If auto-loading failed, display a detailed help message inside welcomeState
+    document.getElementById('welcomeState').innerHTML = `
+      <div class="w-icon">❌</div>
+      <h3 style="color:#C0392B;">Failed to Load Academic Data</h3>
+      <p style="margin-top: 10px; max-width: 460px; font-size: 13.5px; color: var(--text-2); line-height: 1.6;">
+        We could not fetch the course reference database from Google Sheets.
+      </p>
+      <div style="margin: 20px auto 0; text-align: left; max-width: 480px; background: #FFF5F5; border: 1.5px solid #FADBD8; border-radius: 8px; padding: 16px 20px;">
+        <strong style="color: #900C3F; display: block; margin-bottom: 6px; font-size: 13px;">Why did this happen?</strong>
+        <p style="font-size: 12.5px; color: #581845; margin-bottom: 12px; line-height: 1.5;">
+          Modern web browsers block direct fetch requests when opening local files via the <code>file://</code> protocol.
+        </p>
+        <strong style="color: #900C3F; display: block; margin-bottom: 6px; font-size: 13px;">How to run it:</strong>
+        <ol style="font-size: 12.5px; color: #581845; padding-left: 20px; line-height: 1.6;">
+          <li>Close this browser tab.</li>
+          <li>Locate the <code>start_server.command</code> file in the folder.</li>
+          <li>Double-click <code>start_server.command</code> to automatically start a local server and open the portal.</li>
+        </ol>
+      </div>
+    `;
+  }
 }
 
 // ── CASCADE CHAIN ──
