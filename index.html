@@ -3,613 +3,1252 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Course Option form</title>
-
+<title>KL University — Course Option Reference</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    /* Modern UI Reset & Fonts */
-    :root {
-        --primary: #0f4c81; /* Deep Professional Blue */
-        --primary-light: #e6f0fa;
-        --secondary: #f8fafc;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --bg-body: #f1f5f9;
-        --bg-card: #ffffff;
-        --border-color: #cbd5e1;
-        --border-thick: #94a3b8;
-    }
+  :root {
+    --klu-navy: #0A2463;
+    --klu-blue: #1E5AAB;
+    --klu-sky: #3D8BD3;
+    --klu-gold: #E8A020;
+    --klu-gold-light: #FFF3D6;
+    --bg: #F0F4FA;
+    --surface: #FFFFFF;
+    --surface-2: #F7F9FC;
+    --border: #DDE3EE;
+    --border-strong: #B8C4D8;
+    --text: #0D1B35;
+    --text-2: #3F5070;
+    --text-3: #7A8FAF;
+    --green: #12805C;
+    --green-bg: #E6F5EF;
+    --tag-bg: #EBF2FF;
+    --tag-text: #1E5AAB;
 
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        background-color: var(--bg-body);
-        color: var(--text-main);
-    }
-    
-    /* Application Header & Footer Colors */
-    .app-header {
-        background-color: var(--primary);
-        color: white;
-        padding: 20px 30px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 4px rgba(10,36,99,.06), 0 4px 20px rgba(10,36,99,.07);
+    --shadow-lg: 0 8px 40px rgba(10,36,99,.12);
+  }
 
-    .app-header h2 {
-        margin: 0;
-        font-size: 24px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-    }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .app-footer {
-        background-color: var(--primary);
-        color: white;
-        text-align: center;
-        padding: 15px;
-        margin-top: auto; /* Pushes footer to the bottom */
-        font-size: 14px;
-    }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
 
-    /* Main Content Area */
-    .content-wrapper {
-        padding: 30px;
-        flex-grow: 1;
-    }
+  /* ── TOP HEADER ── */
+  .site-header {
+    background: var(--klu-navy);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(10,36,99,.25);
+  }
+  .site-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: var(--klu-gold);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .logo-text { line-height: 1.1; }
+  .logo-text .uni { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .3px; }
+  .logo-text .sub { font-size: 11px; color: rgba(255,255,255,.55); font-weight: 400; }
 
-    /* Upload Area */
-    .upload-section {
-        background: var(--bg-card);
-        padding: 25px;
-        border: 2px dashed #94a3b8;
-        border-radius: 8px;
-        text-align: center;
-        margin-bottom: 25px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        transition: all 0.3s ease;
-    }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .print-btn {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: background .15s;
+    font-family: inherit;
+  }
+  .print-btn:hover { background: rgba(255,255,255,.22); }
 
-    .upload-section:hover {
-        border-color: var(--primary);
-        background-color: var(--primary-light);
-    }
+  /* ── HERO BANNER ── */
+  .hero {
+    background: linear-gradient(135deg, var(--klu-navy) 0%, var(--klu-blue) 60%, var(--klu-sky) 100%);
+    padding: 52px 32px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.25);
+    color: rgba(255,255,255,.9);
+    padding: 5px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(24px, 4vw, 38px);
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+    letter-spacing: -.3px;
+  }
+  .hero p {
+    font-size: 15px;
+    color: rgba(255,255,255,.65);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
 
-    .upload-label {
-        display: block;
-        font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 12px;
-        color: var(--primary);
-    }
+  /* ── MAIN LAYOUT ── */
+  .page-body {
+    max-width: 1340px;
+    margin: -32px auto 0;
+    padding: 0 24px 60px;
+    position: relative;
+    z-index: 1;
+  }
 
-    input[type="file"] {
-        font-size: 14px;
-        color: var(--text-muted);
-        cursor: pointer;
-    }
+  /* ── UPLOAD CARD ── */
+  .upload-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 48px 32px;
+    text-align: center;
+    margin-bottom: 28px;
+    border: 2px dashed var(--border);
+    transition: border-color .2s;
+  }
+  .upload-card:hover { border-color: var(--klu-sky); }
+  .upload-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--tag-bg), #d6e7ff);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 20px;
+  }
+  .upload-card h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .upload-card p {
+    color: var(--text-2);
+    font-size: 14px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  .upload-steps {
+    display: flex; justify-content: center; gap: 0;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .upload-step {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-2);
+    padding: 6px 16px;
+  }
+  .upload-step .num {
+    width: 24px; height: 24px;
+    background: var(--klu-blue);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .upload-step-sep { color: var(--border-strong); font-size: 18px; align-self: center; }
 
-    /* Layout Grid */
-    .main-container {
-        display: grid;
-        grid-template-columns: 320px 1fr; 
-        gap: 25px;
-        align-items: start;
-    }
-    
-    .hidden {
-        display: none !important;
-    }
+  .file-input-wrap { position: relative; display: inline-block; }
+  #excelFile { display: none; }
+  .upload-trigger {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--klu-blue);
+    color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    padding: 13px 28px;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s, transform .1s;
+    box-shadow: 0 4px 12px rgba(30,90,171,.3);
+  }
+  .upload-trigger:hover { background: var(--klu-navy); transform: translateY(-1px); }
+  .upload-hint { font-size: 12px; color: var(--text-3); margin-top: 10px; }
 
-    /* Filters (Left Side) */
-    .filter-card {
-        background: var(--bg-card);
-        padding: 25px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-color);
-    }
+  /* ── CONTENT AREA ── */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
 
-    .filter-card h3 {
-        margin-top: 0;
-        font-size: 16px;
-        color: var(--primary);
-        margin-bottom: 20px;
-        border-bottom: 2px solid var(--primary-light);
-        padding-bottom: 10px;
-    }
+  /* ── FILTER SIDEBAR ── */
+  .filter-sidebar {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    position: sticky;
+    top: 80px;
+  }
+  .filter-sidebar-header {
+    background: var(--klu-navy);
+    padding: 18px 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .filter-sidebar-header h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+  }
+  .filter-body { padding: 20px; }
 
-    .form-group {
-        margin-bottom: 16px;
-    }
+  /* ── ACTIVE REGULATION BANNER ── */
+  #regBanner {
+    display: none;
+    margin-bottom: 16px;
+    background: var(--klu-gold-light);
+    border: 1.5px solid var(--klu-gold);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    align-items: center;
+    gap: 8px;
+  }
+  #regBanner .reg-label { font-size: 11px; font-weight: 600; color: #9B6800; text-transform: uppercase; letter-spacing: .4px; }
+  #regBanner .reg-value { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: #7A4F00; }
 
-    label {
-        display: block;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 6px;
-    }
-    
-    select, input[type="text"] {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        background-color: #f8fafc;
-        font-size: 14px;
-        color: var(--text-main);
-        transition: border-color 0.2s;
-    }
+  .form-group { margin-bottom: 18px; }
+  .form-group:last-child { margin-bottom: 0; }
 
-    select:focus, input[type="text"]:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px var(--primary-light);
-    }
+  .form-label {
+    display: block;
+    font-size: 11px; font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 6px;
+  }
+  .form-label .required { color: var(--klu-gold); margin-left: 2px; }
 
-    /* Table Area (Right Side) */
-    .results-card {
-        background: var(--bg-card);
-        border-radius: 8px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-color);
-        overflow: hidden;
-    }
+  select, .course-name-display {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface-2);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%237A8FAF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color .15s, box-shadow .15s;
+    cursor: pointer;
+  }
+  select:focus { outline: none; border-color: var(--klu-sky); box-shadow: 0 0 0 3px rgba(61,139,211,.15); }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+  input[type="text"] {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface-2);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--klu-sky);
+    box-shadow: 0 0 0 3px rgba(61,139,211,.15);
+  }
 
-    /* Table Header Colors */
-    th {
-        background-color: var(--primary);
-        color: white;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 14px 20px;
-        text-align: left;
-        border-right: 1px solid rgba(255,255,255,0.2);
-    }
+  .select-primary {
+    background: linear-gradient(135deg, #EBF2FF, #F0F6FF) !important;
+    border-color: var(--klu-blue) !important;
+    font-weight: 600;
+    color: var(--klu-navy) !important;
+  }
 
-    td {
-        padding: 14px 20px;
-        font-size: 14px;
-        border-bottom: 1px solid var(--border-color);
-        border-right: 1px solid var(--border-color);
-        vertical-align: middle;
-    }
+  .course-name-display {
+    background: var(--green-bg) !important;
+    border-color: #A3D6C2 !important;
+    color: var(--green) !important;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.4;
+    padding: 10px 12px;
+    min-height: 42px;
+    cursor: default;
+    background-image: none !important;
+    resize: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    display: block;
+    width: 100%;
+    word-break: break-word;
+  }
 
-    /* Merged Section Box Styling */
-    .merged-section-box {
-        background-color: #f8fafc;
-        text-align: center;
-        font-size: 18px !important;
-        font-weight: 800;
-        color: var(--primary);
-        border-right: 2px solid var(--border-thick) !important;
-    }
+  .filter-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 18px -20px;
+  }
 
-    /* Differentiating Border for groups */
-    .group-end-row td {
-        border-bottom: 2px solid var(--border-thick) !important;
-    }
+  /* ── RESULTS PANEL ── */
+  .results-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-    /* Cohort Separator Row */
-    .cohort-row td {
-        background-color: var(--primary-light);
-        color: var(--primary);
-        font-weight: 800;
-        font-size: 14px;
-        padding: 12px 20px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border-bottom: 2px solid var(--primary) !important;
-        border-right: none;
-    }
+  /* ── INFO BAR ── */
+  .info-bar {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .info-bar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .info-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--tag-bg);
+    border: 1px solid #C7DCF5;
+    border-radius: 99px;
+    padding: 5px 12px;
+    font-size: 12px; font-weight: 600;
+    color: var(--tag-text);
+  }
+  .info-chip .dot { width: 6px; height: 6px; background: var(--klu-sky); border-radius: 50%; }
 
-    /* Associative Section Badges (MA, A, B) */
-    .badge-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
+  #resultCount {
+    font-size: 12px; font-weight: 600;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
 
-    .section-badge {
-        background-color: #e2e8f0;
-        color: #334155;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 700;
-        border: 1px solid #cbd5e1;
-    }
+  /* ── TABLE CARD ── */
+  .table-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
 
-    /* Colorful UID Badges */
-    .uid-badge {
-        display: inline-block;
-        color: white;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        text-shadow: 0 1px 1px rgba(0,0,0,0.2);
-    }
+  .table-scroll { overflow-x: auto; }
 
-    .faculty-name {
-        font-weight: 600;
-        color: #0f172a;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
 
-    .empty-state {
-        padding: 40px;
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 15px;
-    }
+  thead th {
+    background: var(--klu-navy);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    padding: 14px 16px;
+    text-align: left;
+    white-space: nowrap;
+    border-right: 1px solid rgba(255,255,255,.1);
+  }
+  thead th:last-child { border-right: none; }
+  thead th.center { text-align: center; }
 
-    @media (max-width: 900px) {
-        .main-container {
-            grid-template-columns: 1fr;
-        }
-    }
+  tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    vertical-align: middle;
+    color: var(--text);
+  }
+  tbody td:last-child { border-right: none; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #F8FAFF; }
+
+  /* ── COURSE HEADER ROW ── */
+  .course-header-row {
+    cursor: pointer;
+    user-select: none;
+  }
+  .course-header-row td {
+    background: linear-gradient(90deg, #1E5AAB 0%, #2C6FC9 100%);
+    color: #fff !important;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 16px;
+    border-bottom: none !important;
+    border-right: none !important;
+    transition: background 0.15s ease;
+  }
+  .course-header-row:hover td {
+    background: linear-gradient(90deg, #174787 0%, #2258A1 100%) !important;
+  }
+
+  .expand-toggle-icon {
+    display: inline-block;
+    font-size: 10px;
+    margin-right: 8px;
+    transition: transform 0.2s ease;
+  }
+  .course-header-row.collapsed .expand-toggle-icon {
+    transform: rotate(0deg);
+  }
+  .course-header-row:not(.collapsed) .expand-toggle-icon {
+    transform: rotate(90deg);
+  }
+
+  .control-btn {
+    background: var(--tag-bg);
+    border: 1px solid #C7DCF5;
+    color: var(--tag-text);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    font-family: inherit;
+  }
+  .control-btn:hover {
+    background: #DCE8FF;
+    border-color: var(--klu-sky);
+  }
+
+  .course-code-pill {
+    display: inline-flex; align-items: center;
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.35);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 10px;
+    letter-spacing: .5px;
+  }
+
+  /* ── COHORT ROW ── */
+  .cohort-row td {
+    background: #EBF2FF !important;
+    color: var(--klu-blue) !important;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    padding: 9px 16px;
+    border-bottom: 1px solid #C7DCF5 !important;
+    border-right: none !important;
+  }
+  .cohort-row:hover td { background: #EBF2FF !important; }
+  .cohort-icon { font-size: 10px; margin-right: 6px; opacity: .7; }
+
+  /* ── DATA CELLS ── */
+  .sec-cell {
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--klu-navy);
+    background: var(--surface-2);
+    border-right: 2px solid var(--border) !important;
+    min-width: 72px;
+  }
+
+  .cat-cell {
+    text-align: center;
+    background: var(--surface-2);
+    border-right: 2px solid var(--border) !important;
+  }
+  .cat-badge {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    border: 1px solid #C7DCF5;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+
+  .uid-badge {
+    display: inline-flex; align-items: center;
+    background: #F3F4F6;
+    color: #374151;
+    border: 1px solid #D1D5DB;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    font-family: 'Space Grotesk', monospace;
+  }
+
+  .faculty-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+  }
+  .faculty-name .not-assigned { color: var(--border-strong); font-weight: 400; font-style: italic; font-size: 13px; }
+
+  .group-end-row td { border-bottom: 2px solid var(--border-strong) !important; }
+
+  /* ── EMPTY / STATUS STATES ── */
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-3);
+  }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: .5; }
+  .empty-state h4 { font-size: 16px; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+  .empty-state p { font-size: 13px; line-height: 1.6; }
+
+  /* ── WELCOME STATE ── */
+  #welcomeState {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 80px 32px;
+    text-align: center;
+  }
+  #welcomeState .w-icon { font-size: 56px; margin-bottom: 16px; }
+  #welcomeState h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  #welcomeState p { font-size: 14px; color: var(--text-2); line-height: 1.6; max-width: 360px; margin: 0 auto; }
+
+  .hidden { display: none !important; }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; }
+    .site-header, .hero, .upload-card, .filter-sidebar, .print-btn, .info-bar { display: none !important; }
+    .page-body { margin: 0; padding: 0; max-width: 100%; }
+    .content-grid { display: block; }
+    .results-panel { gap: 0; }
+    .table-card { box-shadow: none; border-radius: 0; border: 1px solid #ccc; }
+    .course-header-row td { background: #1E5AAB !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    thead th { background: #0A2463 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .filter-sidebar { position: static; }
+    .page-body { padding: 0 16px 40px; }
+  }
 </style>
 </head>
-
 <body>
 
-<div class="app-header">
-    <h2>Course Option form</h2>
+<!-- TOP HEADER -->
+<header class="site-header">
+  <a class="logo" href="#">
+    <div class="logo-icon">🎓</div>
+    <div class="logo-text">
+      <div class="uni">KL University</div>
+      <div class="sub">Academic Planning Board</div>
+    </div>
+  </a>
+  <div class="header-right">
+    <button class="print-btn" onclick="window.print()">
+      🖨️ Print
+    </button>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">📋 AY 2026–2027</div>
+  <h1>Student Course Option Reference</h1>
+  <p>Look up your faculty assignments, sections, and cohorts. Use the filters to find your course quickly.</p>
 </div>
 
-<div class="content-wrapper">
-    <div class="upload-section">
-        <label class="upload-label" for="excelFile">Upload your <b>Option-MASTER.xlsx</b> or <b>.csv</b> file to begin</label>
-        <input type="file" id="excelFile" accept=".xlsx, .xls, .csv">
+<div class="page-body">
+
+  <!-- UPLOAD CARD -->
+  <div class="upload-card" id="uploadBoxMaster">
+    <div class="upload-icon">📊</div>
+    <h2>Load the Option Master File</h2>
+    <p>Upload the official Excel file (.xlsx) to unlock the full faculty allocation list for all courses and sections.</p>
+
+    <div class="upload-steps">
+      <div class="upload-step">
+        <span class="num">1</span>
+        Get the file from your coordinator
+      </div>
+      <span class="upload-step-sep">→</span>
+      <div class="upload-step">
+        <span class="num">2</span>
+        Upload it below
+      </div>
+      <span class="upload-step-sep">→</span>
+      <div class="upload-step">
+        <span class="num">3</span>
+        Filter by your dept &amp; course
+      </div>
     </div>
 
-    <div id="mainContent" class="main-container hidden">
-        
-        <div class="filter-card">
-            <h3>Selection Filters</h3>
-            
-            <div class="form-group">
-                <label>Regulation</label>
-                <select id="reg"></select>
-            </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="category"></select>
-            </div>
-            <div class="form-group">
-                <label>Cluster</label>
-                <select id="cluster"></select>
-            </div>
-            <div class="form-group">
-                <label>Course Code</label>
-                <select id="courseCode"></select>
-            </div>
-            <div class="form-group">
-                <label>Course Name</label>
-                <input type="text" id="courseName" readonly>
-            </div>
-        </div>
-
-        <div class="results-card">
-            <table id="facultyTable">
-                <thead>
-                    <tr>
-                        <th width="15%" style="text-align: center;">Main Section</th>
-                        <th width="20%">Sub Sections</th>
-                        <th width="20%">Employee ID</th>
-                        <th width="45%">Faculty Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
-        </div>
-
+    <div class="file-input-wrap">
+      <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+      <button class="upload-trigger" onclick="document.getElementById('excelFile').click()">
+        ⬆ Upload Option Master (.xlsx)
+      </button>
     </div>
-</div>
+    <div class="upload-hint">Supports .xlsx, .xls, .csv · File stays in your browser — nothing is uploaded to any server</div>
+  </div>
 
-<div class="app-footer">
-    &copy; 2026 Academic Planning & Faculty Allocation System. All rights reserved.
-</div>
+  <!-- MAIN CONTENT (hidden until file loaded) -->
+  <div id="mainContent" class="content-grid hidden">
+
+    <!-- FILTER SIDEBAR -->
+    <aside class="filter-sidebar">
+      <div class="filter-sidebar-header">
+        <span>🔍</span>
+        <h3>Filter Options</h3>
+      </div>
+      <div class="filter-body">
+
+        <!-- REGULATION BADGE -->
+        <div id="regBanner">
+          <div>
+            <div class="reg-label">Regulation</div>
+            <div class="reg-value" id="regBannerValue">—</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Regulation <span class="required">★</span></label>
+          <select id="reg" class="select-primary" onchange="onRegChange()"></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Department (Offered To) <span class="required">★</span></label>
+          <select id="offeredToDept" class="select-primary" onchange="loadCategory()"></select>
+        </div>
+
+        <div class="filter-divider"></div>
+
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="category" onchange="loadCluster()"></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Cluster</label>
+          <select id="cluster" onchange="loadCourseCode()"></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Course Code</label>
+          <select id="courseCode" onchange="loadCourseName()"></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Course Name</label>
+          <div class="course-name-display" id="courseName">—</div>
+        </div>
+
+        <div class="filter-divider"></div>
+
+        <div class="form-group">
+          <label class="form-label">Search Filter</label>
+          <input type="text" id="searchInput" placeholder="Search code, name, faculty..." oninput="loadFacultyTable()">
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- RESULTS PANEL -->
+    <div class="results-panel">
+
+      <!-- INFO BAR -->
+      <div class="info-bar" id="infoBar">
+        <div class="info-bar-left">
+          <div class="info-chip"><span class="dot"></span><span id="activeReg">—</span></div>
+          <div class="info-chip"><span id="activeDept">—</span></div>
+          <div class="info-chip" id="activeCatChip" style="display:none"><span id="activeCat">—</span></div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div id="tableControls" style="display: none; gap: 8px;">
+            <button onclick="toggleAllCourses(true)" class="control-btn">↔ Expand All</button>
+            <button onclick="toggleAllCourses(false)" class="control-btn">↔ Collapse All</button>
+          </div>
+          <span id="resultCount">— entries</span>
+        </div>
+      </div>
+
+      <!-- WELCOME STATE (shown before data loads) -->
+      <div id="welcomeState">
+        <div class="w-icon">👆</div>
+        <h3>Select your Department</h3>
+        <p>Choose your regulation and department on the left to see faculty assignments for all your courses.</p>
+      </div>
+
+      <!-- TABLE CARD -->
+      <div class="table-card hidden" id="tableCard">
+        <div class="table-scroll">
+          <table id="facultyTable">
+            <thead>
+              <tr>
+                <th class="center" width="9%">Section</th>
+                <th class="center" width="12%">Category</th>
+                <th width="18%">Employee ID</th>
+                <th>Assigned Faculty</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /results-panel -->
+  </div><!-- /content-grid -->
+
+</div><!-- /page-body -->
 
 <script>
-let data = []; 
+let data = [];
+let deptMapping = {};
 
-const reg = document.getElementById("reg");
+const regEl = document.getElementById("reg");
+const offeredToDept = document.getElementById("offeredToDept");
 const category = document.getElementById("category");
 const cluster = document.getElementById("cluster");
 const courseCode = document.getElementById("courseCode");
-const courseName = document.getElementById("courseName");
-const tbody = document.querySelector("#facultyTable tbody");
+const tbody = document.getElementById("tbody");
 
-function getCleanStr(val) {
-    if (val === undefined || val === null) return "";
-    return String(val).trim();
-}
-
-// Map of vivid colors for the UIDs (Blue, Red, Green, Orange, Purple)
-const uidColors = ["#ef4444", "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6"];
-
-// Function to assign a consistent color based on the string value of the ID
-function getColorForId(idStr) {
-    if (!idStr || idStr === "-") return "#94a3b8"; // Default gray for empty
-    let hash = 0;
-    for (let i = 0; i < idStr.length; i++) {
-        hash = idStr.charCodeAt(i) + ((hash << 5) - hash);
+// Delegate clicks on course headers to toggle expand/collapse
+tbody.addEventListener("click", function(e) {
+  let header = e.target.closest(".course-header-row");
+  if (!header) return;
+  
+  let cCode = header.getAttribute("data-course");
+  let isCollapsed = header.classList.contains("collapsed");
+  
+  header.classList.toggle("collapsed");
+  
+  let subRows = tbody.querySelectorAll(`.course-sub-row-${cCode}`);
+  subRows.forEach(row => {
+    if (isCollapsed) {
+      row.classList.remove("hidden");
+    } else {
+      row.classList.add("hidden");
     }
-    hash = Math.abs(hash);
-    return uidColors[hash % uidColors.length];
-}
-
-// Parse the uploaded file
-document.getElementById('excelFile').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    
-    reader.onload = function(e) {
-        try {
-            const dataBuffer = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(dataBuffer, { type: 'array' });
-            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-            if (rawData.length === 0) {
-                alert("The uploaded file appears to be empty.");
-                return;
-            }
-
-            let headers = Object.keys(rawData[0]);
-            
-            function findHeader(possibleKeys) {
-                return headers.find(h => possibleKeys.includes(h.toLowerCase().replace(/[\s_]+/g, '')));
-            }
-
-            // Filter Columns
-            let kReg = findHeader(["reg", "regulation"]);
-            let kCat = findHeader(["category"]);
-            let kClu = findHeader(["cluster"]);
-            let kCode = findHeader(["coursecode"]);
-            let kName = findHeader(["coursename"]);
-
-            // Table Data Columns
-            let kCohort = findHeader(["cohort", "section"]);
-            let kMainSec = findHeader(["mainsectionno", "mainsection"]);
-            let kAssocSec = findHeader(["associativesectionno", "associative", "subsec"]);
-            let kEmpId = findHeader(["uniid", "employeeid", "empid"]);
-            let kFacList = findHeader(["facultylist", "facultyname", "faculty"]);
-
-            let lastReg = "", lastCat = "", lastClu = "", lastCode = "", lastName = "";
-
-            data = rawData.map(row => {
-                let cleanRow = {};
-                
-                if (getCleanStr(row[kReg])) lastReg = getCleanStr(row[kReg]);
-                if (getCleanStr(row[kCat])) lastCat = getCleanStr(row[kCat]);
-                if (getCleanStr(row[kClu])) lastClu = getCleanStr(row[kClu]);
-                if (getCleanStr(row[kCode])) lastCode = getCleanStr(row[kCode]);
-                if (getCleanStr(row[kName])) lastName = getCleanStr(row[kName]);
-
-                cleanRow["_REG"] = lastReg;
-                cleanRow["_CAT"] = lastCat;
-                cleanRow["_CLU"] = lastClu;
-                cleanRow["_CODE"] = lastCode;
-                cleanRow["_NAME"] = lastName;
-                
-                cleanRow["_COHORT"] = getCleanStr(row[kCohort]) || "General";
-                cleanRow["_MAIN_SEC"] = getCleanStr(row[kMainSec]) || "-";
-                cleanRow["_ASSOC_SEC"] = getCleanStr(row[kAssocSec]) || "";
-                cleanRow["_EMP_ID"] = getCleanStr(row[kEmpId]) || "-";
-                cleanRow["_FAC_NAME"] = getCleanStr(row[kFacList]) || "-";
-
-                return cleanRow;
-            });
-
-            document.getElementById('mainContent').classList.remove('hidden');
-            loadReg();
-            
-        } catch (error) {
-            alert("Error parsing file. Please ensure it is a valid Excel or CSV file.");
-            console.error(error);
-        }
-    };
-    reader.readAsArrayBuffer(file);
+  });
 });
 
-// --- Cascading Dropdown Logic ---
-function unique(arr) {
-    return [...new Set(arr.filter(Boolean))]; 
-}
-
-function fillDropdown(element, values) {
-    element.innerHTML = "";
-    if (values.length === 0) {
-        element.innerHTML = "<option value=''>No Options Available</option>";
-        return;
+function toggleAllCourses(expand) {
+  let headers = tbody.querySelectorAll(".course-header-row");
+  headers.forEach(header => {
+    let cCode = header.getAttribute("data-course");
+    let subRows = tbody.querySelectorAll(`.course-sub-row-${cCode}`);
+    
+    if (expand) {
+      header.classList.remove("collapsed");
+      subRows.forEach(row => row.classList.remove("hidden"));
+    } else {
+      header.classList.add("collapsed");
+      subRows.forEach(row => row.classList.add("hidden"));
     }
-    values.forEach(v => {
-        let opt = document.createElement("option");
-        opt.value = v;
-        opt.text = v;
-        element.appendChild(opt);
-    });
+  });
 }
 
+function getCleanStr(val) {
+  if (val === undefined || val === null) return "";
+  let str = String(val).trim().toUpperCase();
+  if (str === "NAN" || str === "NULL" || str === "UNDEFINED") return "";
+  return str;
+}
+
+function unique(arr) {
+  return [...new Set(arr.filter(Boolean))].sort();
+}
+
+function fillDropdown(element, values, addAllOption = false) {
+  element.innerHTML = "";
+  if (element.id === "offeredToDept") {
+    let optPlaceholder = document.createElement("option");
+    optPlaceholder.value = "";
+    optPlaceholder.text = "— Select Department —";
+    element.appendChild(optPlaceholder);
+  }
+  if (addAllOption) {
+    let optAll = document.createElement("option");
+    optAll.value = "ALL";
+    if (element.id === "category") optAll.text = "— All Categories —";
+    else if (element.id === "courseCode") optAll.text = "— Show All Courses —";
+    element.appendChild(optAll);
+  }
+  if (values.length === 0 && !addAllOption) {
+    if (element.id === "offeredToDept") return;
+    element.innerHTML = "<option value=''>No options found</option>";
+    return;
+  }
+  values.forEach(v => {
+    let opt = document.createElement("option");
+    opt.value = v; opt.text = v;
+    element.appendChild(opt);
+  });
+}
+
+// Reusable Excel parsing function
+function processExcelBuffer(dataBuffer) {
+  const workbook = XLSX.read(dataBuffer, { type: 'array' });
+  deptMapping = {};
+
+  if (workbook.SheetNames.length > 1) {
+    const sheet2 = workbook.Sheets[workbook.SheetNames[1]];
+    const sheet2Array = XLSX.utils.sheet_to_json(sheet2, { header: 1, blankrows: false });
+    if (sheet2Array.length > 0) {
+      let headerRowIndex = -1, kCodeIndex = -1, kDeptIndex = -1;
+      for (let i = 0; i < Math.min(sheet2Array.length, 20); i++) {
+        let row = sheet2Array[i]; if (!row) continue;
+        let foundCode = -1, foundDept = -1;
+        for (let j = 0; j < row.length; j++) {
+          let cellVal = String(row[j] || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (cellVal.includes("coursecode") || cellVal === "code" || cellVal.includes("subjectcode")) foundCode = j;
+          if (cellVal.includes("department") || cellVal.includes("dept") || cellVal.includes("offered") || cellVal.includes("branch")) foundDept = j;
+        }
+        if (foundCode !== -1 && foundDept !== -1) { headerRowIndex = i; kCodeIndex = foundCode; kDeptIndex = foundDept; break; }
+      }
+      if (headerRowIndex !== -1) {
+        for (let i = headerRowIndex + 1; i < sheet2Array.length; i++) {
+          let row = sheet2Array[i]; if (!row) continue;
+          let code = getCleanStr(row[kCodeIndex]);
+          let dept = getCleanStr(row[kDeptIndex]);
+          if (code && dept) {
+            if (!deptMapping[code]) deptMapping[code] = new Set();
+            dept.split(',').forEach(d => { if (d.trim()) deptMapping[code].add(d.trim()); });
+          }
+        }
+      }
+    }
+  }
+
+  const mainSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rawData = XLSX.utils.sheet_to_json(mainSheet, { defval: "" });
+  if (rawData.length === 0) { throw new Error("File appears to be empty."); }
+
+  let headers = Object.keys(rawData[0]);
+  function findHeader(possibleKeys) {
+    return headers.find(h => {
+      let cleanH = h.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return possibleKeys.some(key => cleanH.includes(key));
+    });
+  }
+
+  let kReg     = findHeader(["reg", "regulation"]);
+  let kCat     = findHeader(["category"]);
+  let kClu     = findHeader(["cluster"]);
+  let kCode    = findHeader(["coursecode", "subjectcode", "code"]);
+  let kName    = findHeader(["coursename", "subjectname"]);
+  let kCohort  = findHeader(["cohort", "section"]);
+  let kMainSec = findHeader(["mainsectionno", "mainsection"]);
+  let kAssocSec= findHeader(["associativesectionno", "associative", "subsec"]);
+  let kEmpId   = findHeader(["uniid", "employeeid", "empid"]);
+  let kFacList = findHeader(["facultylist", "facultyname", "faculty"]);
+  let kDeptMain= findHeader(["department", "dept", "offered", "branch"]);
+
+  data = rawData.map(row => {
+    let cleanRow = {};
+    cleanRow["_REG"]      = getCleanStr(row[kReg]);
+    cleanRow["_CAT"]      = getCleanStr(row[kCat]);
+    cleanRow["_CLU"]      = getCleanStr(row[kClu]);
+    cleanRow["_CODE"]     = getCleanStr(row[kCode]);
+    let rawName = row[kName] ? String(row[kName]).trim() : "";
+    cleanRow["_NAME"]     = rawName.toUpperCase() === "NAN" ? "" : rawName;
+    cleanRow["_COHORT"]   = getCleanStr(row[kCohort]);
+    cleanRow["_MAIN_SEC"] = getCleanStr(row[kMainSec]);
+    cleanRow["_ASSOC_SEC"]= getCleanStr(row[kAssocSec]);
+    cleanRow["_EMP_ID"]   = getCleanStr(row[kEmpId]);
+    let rawFac = row[kFacList] ? String(row[kFacList]).trim() : "";
+    cleanRow["_FAC_NAME"] = rawFac.toUpperCase() === "NAN" ? "" : rawFac;
+
+    if (kDeptMain) {
+      let deptVal = getCleanStr(row[kDeptMain]);
+      let cCode = cleanRow["_CODE"];
+      if (cCode && deptVal && deptVal !== "#N/A" && deptVal !== "0") {
+        if (!deptMapping[cCode]) deptMapping[cCode] = new Set();
+        deptVal.split(',').forEach(d => { if (d.trim()) deptMapping[cCode].add(d.trim()); });
+      }
+    }
+    return cleanRow;
+  });
+
+  // Forward fill merged cells
+  let lastReg = "", lastCat = "", lastClu = "", lastCode = "", lastName = "";
+  data.forEach(row => {
+    if (row["_REG"])  lastReg  = row["_REG"];  else row["_REG"]  = lastReg;
+    if (row["_CAT"])  lastCat  = row["_CAT"];  else row["_CAT"]  = lastCat;
+    if (row["_CLU"])  lastClu  = row["_CLU"];  else row["_CLU"]  = lastClu;
+    if (row["_CODE"]) lastCode = row["_CODE"]; else row["_CODE"] = lastCode;
+    if (row["_NAME"]) lastName = row["_NAME"]; else row["_NAME"] = lastName;
+  });
+
+  data.forEach(row => {
+    let cCode = row["_CODE"];
+    if (deptMapping[cCode] && deptMapping[cCode].size > 0) {
+      row["_DEPTS"] = Array.from(deptMapping[cCode]);
+    } else {
+      row["_DEPTS"] = ["DATA NOT AVAILABLE"];
+    }
+  });
+
+  document.getElementById('mainContent').classList.remove('hidden');
+  document.getElementById('uploadBoxMaster').classList.add('hidden');
+  loadReg();
+}
+
+// FILE UPLOAD
+document.getElementById('excelFile').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const dataBuffer = new Uint8Array(e.target.result);
+      processExcelBuffer(dataBuffer);
+    } catch (error) {
+      alert("Error reading file. Please make sure it's a valid Excel file.");
+      console.error(error);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+// Auto-load excel file if available locally
+window.addEventListener('DOMContentLoaded', () => {
+  autoLoadExcel();
+});
+
+async function autoLoadExcel() {
+  const paths = ['Option-MASTER.xlsx', '../Option-MASTER.xlsx'];
+  for (let path of paths) {
+    try {
+      const response = await fetch(path);
+      if (!response.ok) continue;
+      const arrayBuffer = await response.arrayBuffer();
+      const dataBuffer = new Uint8Array(arrayBuffer);
+      processExcelBuffer(dataBuffer);
+      console.log(`Successfully auto-loaded excel from ${path}`);
+      return;
+    } catch (e) {
+      console.warn(`Failed to auto-load from ${path}:`, e);
+    }
+  }
+  // If not auto-loaded, make sure the upload card remains visible
+  document.getElementById('uploadBoxMaster').classList.remove('hidden');
+}
+
+// ── CASCADE CHAIN ──
 function loadReg() {
-    fillDropdown(reg, unique(data.map(x => x["_REG"])));
-    loadCategory();
+  fillDropdown(regEl, unique(data.map(x => x["_REG"])), false);
+  onRegChange();
+}
+
+function onRegChange() {
+  // Update regulation banner
+  const val = regEl.value;
+  document.getElementById('regBannerValue').textContent = val || '—';
+  document.getElementById('regBanner').style.display = val ? 'flex' : 'none';
+  document.getElementById('activeReg').textContent = val ? `Regulation: ${val}` : '—';
+  loadOfferedTo();
+}
+
+function loadOfferedTo() {
+  let rows = data.filter(x => x["_REG"] === regEl.value);
+  let allDepts = [];
+  rows.forEach(r => { if (r["_DEPTS"]) allDepts.push(...r["_DEPTS"]); });
+  fillDropdown(offeredToDept, unique(allDepts), false);
+  loadCategory();
 }
 
 function loadCategory() {
-    let rows = data.filter(x => x["_REG"] === reg.value);
-    fillDropdown(category, unique(rows.map(x => x["_CAT"])));
-    loadCluster();
+  if (!offeredToDept.value || offeredToDept.value === "NO" || offeredToDept.value === "DATA NOT AVAILABLE") {
+    fillDropdown(category, [], true);
+    document.getElementById('activeDept').textContent = '—';
+    document.getElementById('activeCatChip').style.display = 'none';
+    fillDropdown(cluster, [], false);
+    fillDropdown(courseCode, [], true);
+    document.getElementById('courseName').textContent = '—';
+    loadFacultyTable();
+    return;
+  }
+
+  let rows = data.filter(x =>
+    x["_REG"] === regEl.value &&
+    x["_DEPTS"] && x["_DEPTS"].includes(offeredToDept.value)
+  );
+  fillDropdown(category, unique(rows.map(x => x["_CAT"])), true);
+  document.getElementById('activeDept').textContent = offeredToDept.value || '—';
+  loadCluster();
 }
 
 function loadCluster() {
-    let rows = data.filter(x => x["_REG"] === reg.value && x["_CAT"] === category.value);
-    fillDropdown(cluster, unique(rows.map(x => x["_CLU"])));
-    loadCourseCode();
+  let rows = data.filter(x =>
+    x["_REG"] === regEl.value &&
+    x["_DEPTS"] && x["_DEPTS"].includes(offeredToDept.value) &&
+    (category.value === "ALL" || x["_CAT"] === category.value)
+  );
+  fillDropdown(cluster, unique(rows.map(x => x["_CLU"])), false);
+
+  // Show/hide category chip in info bar
+  const catChip = document.getElementById('activeCatChip');
+  if (category.value && category.value !== "ALL") {
+    document.getElementById('activeCat').textContent = category.value;
+    catChip.style.display = 'inline-flex';
+  } else {
+    catChip.style.display = 'none';
+  }
+
+  loadCourseCode();
 }
 
 function loadCourseCode() {
-    let rows = data.filter(x => 
-        x["_REG"] === reg.value && 
-        x["_CAT"] === category.value && 
-        x["_CLU"] === cluster.value
-    );
-    fillDropdown(courseCode, unique(rows.map(x => x["_CODE"])));
-    loadCourseName();
+  let rows = data.filter(x =>
+    x["_REG"] === regEl.value &&
+    x["_DEPTS"] && x["_DEPTS"].includes(offeredToDept.value) &&
+    (category.value === "ALL" || x["_CAT"] === category.value) &&
+    x["_CLU"] === cluster.value
+  );
+  fillDropdown(courseCode, unique(rows.map(x => x["_CODE"])), true);
+  loadCourseName();
 }
 
 function loadCourseName() {
-    let row = data.find(x => 
-        x["_REG"] === reg.value && 
-        x["_CAT"] === category.value && 
-        x["_CLU"] === cluster.value && 
-        x["_CODE"] === courseCode.value
+  if (courseCode.value === "ALL") {
+    document.getElementById('courseName').textContent = "Viewing all authorized courses";
+  } else {
+    let row = data.find(x =>
+      x["_REG"] === regEl.value &&
+      x["_DEPTS"] && x["_DEPTS"].includes(offeredToDept.value) &&
+      (category.value === "ALL" || x["_CAT"] === category.value) &&
+      x["_CLU"] === cluster.value &&
+      x["_CODE"] === courseCode.value
     );
-    courseName.value = row ? row["_NAME"] : "";
-    loadFacultyTable();
+    document.getElementById('courseName').textContent = row ? row["_NAME"] : "—";
+  }
+  loadFacultyTable();
 }
 
+// ── TABLE RENDER ──
 function loadFacultyTable() {
-    let courseRows = data.filter(x => 
-        x["_REG"] === reg.value && 
-        x["_CAT"] === category.value && 
-        x["_CLU"] === cluster.value && 
-        x["_CODE"] === courseCode.value
-    );
+  const tableCard = document.getElementById('tableCard');
+  const welcomeState = document.getElementById('welcomeState');
+  const resultCount = document.getElementById('resultCount');
+  const tableControls = document.getElementById('tableControls');
 
+  if (!offeredToDept.value || offeredToDept.value === "NO" || offeredToDept.value === "DATA NOT AVAILABLE") {
     tbody.innerHTML = "";
+    tableCard.classList.add('hidden');
+    welcomeState.classList.remove('hidden');
+    welcomeState.innerHTML = `
+      <div class="w-icon">👆</div>
+      <h3>First select the department</h3>
+      <p>Please select a department from the filter options on the left to see the course reference details.</p>
+    `;
+    resultCount.textContent = "0 entries";
+    if (tableControls) tableControls.style.display = 'none';
+    return;
+  }
 
-    if (courseRows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">No faculty details found.</div></td></tr>`;
-        return;
+  let rawRows = data.filter(x =>
+    x["_REG"] === regEl.value &&
+    x["_DEPTS"] && x["_DEPTS"].includes(offeredToDept.value) &&
+    (category.value === "ALL" || x["_CAT"] === category.value) &&
+    x["_CLU"] === cluster.value &&
+    (courseCode.value === "ALL" || x["_CODE"] === courseCode.value)
+  );
+
+  let query = document.getElementById("searchInput") ? document.getElementById("searchInput").value.trim().toLowerCase() : "";
+  if (query) {
+    rawRows = rawRows.filter(x => {
+      let code = (x["_CODE"] || "").toLowerCase();
+      let name = (x["_NAME"] || "").toLowerCase();
+      let fac = (x["_FAC_NAME"] || "").toLowerCase();
+      return code.includes(query) || name.includes(query) || fac.includes(query);
+    });
+  }
+
+  let tableRows = rawRows.filter(row => {
+    let sec = row["_ASSOC_SEC"] ? row["_ASSOC_SEC"].trim().toUpperCase() : "";
+    return sec !== "B" && sec !== "C";
+  });
+
+  tbody.innerHTML = "";
+
+  if (tableRows.length === 0) {
+    tableCard.classList.add('hidden');
+    welcomeState.classList.remove('hidden');
+    welcomeState.innerHTML = `
+      <div class="w-icon">🔍</div>
+      <h3>No results found</h3>
+      <p>No faculty assignments match your current selection. Try adjusting the filters.</p>
+    `;
+    resultCount.textContent = "0 entries";
+    if (tableControls) tableControls.style.display = 'none';
+    return;
+  }
+
+  welcomeState.classList.add('hidden');
+  tableCard.classList.remove('hidden');
+  if (tableControls) tableControls.style.display = 'flex';
+
+  // Group: COURSE → COHORT → MAIN_SECTION → FACULTY
+  let courses = {};
+  tableRows.forEach(row => {
+    if (!row["_EMP_ID"] && !row["_FAC_NAME"] && !row["_MAIN_SEC"]) return;
+    let cCode = row["_CODE"];
+    let cName = row["_NAME"];
+    let cCat = row["_CAT"];
+    let cohortName = row["_COHORT"] || "General";
+    let mainSec = row["_MAIN_SEC"] || "-";
+    if (!courses[cCode]) courses[cCode] = { name: cName, category: cCat, cohorts: {} };
+    if (!courses[cCode].cohorts[cohortName]) courses[cCode].cohorts[cohortName] = {};
+    if (!courses[cCode].cohorts[cohortName][mainSec]) courses[cCode].cohorts[cohortName][mainSec] = {};
+    let groupKey = `${row["_EMP_ID"]}|${row["_FAC_NAME"]}`;
+    if (!courses[cCode].cohorts[cohortName][mainSec][groupKey]) {
+      courses[cCode].cohorts[cohortName][mainSec][groupKey] = {
+        empId: row["_EMP_ID"],
+        facName: row["_FAC_NAME"]
+      };
     }
+  });
 
-    // 1. Group by COHORT -> MAIN_SECTION -> FACULTY
-    let cohorts = {};
-    
-    courseRows.forEach(row => {
-        let cohortName = row["_COHORT"];
-        let mainSec = row["_MAIN_SEC"];
-        
-        if (!cohorts[cohortName]) cohorts[cohortName] = {};
-        if (!cohorts[cohortName][mainSec]) cohorts[cohortName][mainSec] = {};
+  let totalEntries = 0;
 
-        // Unique Faculty Key
-        let groupKey = `${row["_EMP_ID"]}|${row["_FAC_NAME"]}`;
-        
-        if (!cohorts[cohortName][mainSec][groupKey]) {
-            cohorts[cohortName][mainSec][groupKey] = {
-                empId: row["_EMP_ID"],
-                facName: row["_FAC_NAME"],
-                assocSections: new Set() 
-            };
-        }
+  Object.keys(courses).sort().forEach(cCode => {
+    // Course Header
+    let courseTr = document.createElement("tr");
+    courseTr.className = "course-header-row";
+    courseTr.setAttribute("data-course", cCode);
+    courseTr.innerHTML = `<td colspan="4">
+      <span class="expand-toggle-icon">▶</span><span class="course-code-pill">${cCode}</span>${courses[cCode].name || cCode}
+    </td>`;
+    tbody.appendChild(courseTr);
 
-        if (row["_ASSOC_SEC"]) {
-            cohorts[cohortName][mainSec][groupKey].assocSections.add(row["_ASSOC_SEC"]);
-        }
-    });
-
-    // RENDER THE TABLE WITH DYNAMIC ROWSPANS
+    let cohorts = courses[cCode].cohorts;
     Object.keys(cohorts).sort().forEach(cohortName => {
-        
-        // Render Cohort Header
-        let cohortTr = document.createElement("tr");
-        cohortTr.className = "cohort-row";
-        cohortTr.innerHTML = `<td colspan="4">⯆ COHORT: ${cohortName}</td>`;
-        tbody.appendChild(cohortTr);
+      let cohortTr = document.createElement("tr");
+      cohortTr.className = `cohort-row course-sub-row-${cCode}`;
+      cohortTr.innerHTML = `<td colspan="4"><span class="cohort-icon">▶</span>Cohort: ${cohortName}</td>`;
+      tbody.appendChild(cohortTr);
 
-        let mainSectionsMap = cohorts[cohortName];
+      let mainSectionsMap = cohorts[cohortName];
+      let sortedSections = Object.keys(mainSectionsMap).sort((a, b) => {
+        let nA = parseInt(a), nB = parseInt(b);
+        if (!isNaN(nA) && !isNaN(nB) && nA !== nB) return nA - nB;
+        return a.localeCompare(b);
+      });
 
-        Object.keys(mainSectionsMap).sort().forEach(mainSec => {
-            
-            // Get all unique faculty members for this specific Main Section
-            let facultyList = Object.values(mainSectionsMap[mainSec]);
-            
-            // The number of rows to span is equal to the number of faculty members in this section
-            let rowSpanCount = facultyList.length;
+      sortedSections.forEach(mainSec => {
+        let facultyList = Object.values(mainSectionsMap[mainSec]);
+        let validFacultyList = facultyList.filter(fac => fac.empId || fac.facName);
+        let rowSpanCount = validFacultyList.length;
+        if (rowSpanCount === 0) return;
 
-            facultyList.forEach((fac, index) => {
-                // Ignore completely empty ghost rows
-                if (fac.empId === "-" && fac.facName === "-" && fac.assocSections.size === 0) return;
+        validFacultyList.forEach((fac, index) => {
+          totalEntries++;
+          let tr = document.createElement("tr");
+          tr.className = `course-sub-row-${cCode}`;
+          if (index === rowSpanCount - 1) tr.classList.add("group-end-row");
 
-                let tr = document.createElement("tr");
+          if (index === 0) {
+            let tdMain = document.createElement("td");
+            tdMain.rowSpan = rowSpanCount;
+            tdMain.className = "sec-cell";
+            tdMain.innerHTML = mainSec !== "-" ? mainSec : `<span style="color:#DDE3EE">—</span>`;
+            tr.appendChild(tdMain);
 
-                // If this is the LAST row in the Main Section group, add the thick differentiating border
-                if (index === rowSpanCount - 1) {
-                    tr.classList.add("group-end-row");
-                }
+            let tdCat = document.createElement("td");
+            tdCat.rowSpan = rowSpanCount;
+            tdCat.className = "cat-cell";
+            let catVal = courses[cCode].category;
+            tdCat.innerHTML = catVal && catVal !== "-"
+              ? `<span class="cat-badge">${catVal}</span>`
+              : `<span style="color:#DDE3EE">—</span>`;
+            tr.appendChild(tdCat);
+          }
 
-                // MERGED BOX LOGIC: Only attach the Main Section cell to the FIRST row of the group
-                if (index === 0) {
-                    let tdMain = document.createElement("td");
-                    tdMain.rowSpan = rowSpanCount;
-                    tdMain.className = "merged-section-box";
-                    tdMain.innerHTML = mainSec;
-                    tr.appendChild(tdMain);
-                }
+          let tdUid = document.createElement("td");
+          if (fac.empId && fac.empId !== "-") {
+            tdUid.innerHTML = `<span class="uid-badge">${fac.empId}</span>`;
+          } else {
+            tdUid.innerHTML = `<span style="color:#DDE3EE">—</span>`;
+          }
+          tr.appendChild(tdUid);
 
-                // Sub Sections (Badges)
-                let tdSub = document.createElement("td");
-                if (fac.assocSections.size > 0) {
-                    let badgesHTML = `<div class="badge-container">`;
-                    Array.from(fac.assocSections).sort().forEach(sec => {
-                        badgesHTML += `<span class="section-badge">${sec}</span>`;
-                    });
-                    badgesHTML += `</div>`;
-                    tdSub.innerHTML = badgesHTML;
-                } else {
-                    tdSub.innerHTML = "-";
-                }
-                tr.appendChild(tdSub);
+          let tdName = document.createElement("td");
+          tdName.className = "faculty-name";
+          tdName.innerHTML = fac.facName && fac.facName !== "-"
+            ? fac.facName
+            : `<span class="not-assigned">Not yet assigned</span>`;
+          tr.appendChild(tdName);
 
-                // Colorful Employee ID
-                let tdUid = document.createElement("td");
-                if (fac.empId !== "-") {
-                    let badgeColor = getColorForId(fac.empId);
-                    tdUid.innerHTML = `<span class="uid-badge" style="background-color: ${badgeColor};">${fac.empId}</span>`;
-                } else {
-                    tdUid.innerHTML = "-";
-                }
-                tr.appendChild(tdUid);
-
-                // Faculty Name
-                let tdName = document.createElement("td");
-                tdName.className = "faculty-name";
-                tdName.textContent = fac.facName;
-                tr.appendChild(tdName);
-
-                tbody.appendChild(tr);
-            });
+          tbody.appendChild(tr);
         });
+      });
     });
+  });
+
+  resultCount.textContent = `${totalEntries} entr${totalEntries === 1 ? 'y' : 'ies'}`;
 }
-
-// Event Listeners
-reg.addEventListener("change", loadCategory);
-category.addEventListener("change", loadCluster);
-cluster.addEventListener("change", loadCourseCode);
-courseCode.addEventListener("change", loadCourseName);
-
 </script>
 </body>
 </html>
