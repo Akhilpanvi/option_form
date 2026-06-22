@@ -445,10 +445,10 @@
     text-align: left;
     white-space: nowrap;
     border-right: 1px solid rgba(255,255,255,.1);
-    /* Freeze pane: header row stays pinned under the site header while scrolling */
+    /* Freeze pane, level 1: column headers pin under the site header */
     position: sticky;
     top: 60px;
-    z-index: 20;
+    z-index: 30;
   }
   thead th:last-child { border-right: none; }
   thead th:first-child { border-top-left-radius: var(--radius); }
@@ -481,6 +481,13 @@
     border-bottom: none !important;
     border-right: none !important;
     transition: background 0.15s ease;
+    /* Freeze pane, level 2: the course pins under the column headers */
+    position: sticky;
+    top: 102px;
+    z-index: 20;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .course-header-row:hover td {
     background: var(--klu-navy) !important;
@@ -540,6 +547,10 @@
     padding: 9px 16px;
     border-bottom: 1px solid #E6D4E6 !important;
     border-right: none !important;
+    /* Freeze pane, level 3: the cohort pins under the course header */
+    position: sticky;
+    top: 151px;
+    z-index: 10;
   }
   .cohort-row:hover td { background: #F4E9F4 !important; }
   .cohort-icon { font-size: 10px; margin-right: 6px; opacity: .7; }
@@ -672,22 +683,32 @@
     #facultyTable thead { display: none; }
 
     /* Course + cohort banners stay full-width headers */
-    .course-header-row td { border-radius: 0; font-size: 13.5px; padding: 14px 16px; }
+    /* Cards, not a table: drop the table freeze pane and let the course banner wrap */
+    .course-header-row td {
+      border-radius: 0; font-size: 13.5px; padding: 14px 16px;
+      position: static; white-space: normal; overflow: visible; text-overflow: clip;
+    }
     .course-code-pill { margin-bottom: 0; }
-    .cohort-row td { padding: 10px 16px; }
+    .cohort-row td { padding: 10px 16px; position: static; }
 
     /* Hide the merged (rowspan) section/category cells; the card header shows them instead.
        IDs are used here to out-rank the `#facultyTable td { display:block }` rule above. */
     #facultyTable .fac-row td.sec-cell,
     #facultyTable .fac-row td.cat-cell { display: none; }
 
-    /* Each faculty row becomes a tidy card */
+    /* Each faculty row becomes a real, self-contained card box */
     .fac-row {
-      padding: 12px 16px 14px;
-      border-bottom: 1px solid var(--border);
+      margin: 0 12px 12px;
+      padding: 12px 14px;
       background: var(--surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
     }
+    .cohort-row + .fac-row { margin-top: 12px; }
     .fac-row:hover td { background: transparent; }
+    /* give the list a little breathing room inside the table card */
+    #facultyTable tbody { padding-bottom: 4px; }
 
     /* Card header: "Section 5 · CORE" pulled from a data attribute */
     .fac-row::before {
@@ -723,7 +744,7 @@
       letter-spacing: .4px;
       color: var(--text-3);
     }
-    .group-end-row { border-bottom: 3px solid var(--border-strong) !important; }
+    .group-end-row { border-bottom: none !important; }
   }
 </style>
 </head>
